@@ -19,12 +19,12 @@ public class DataManager {
         mSharedPrefsHelper = sharedPrefsHelper;
     }
 
-    public void saveAccessToken(String accessToken) {
-        mSharedPrefsHelper.put(SharedPrefsHelper.PREF_KEY_ACCESS_TOKEN, accessToken);
+    public void saveString(String accessToken, String key) {
+        mSharedPrefsHelper.put(key, accessToken);
     }
 
-    public String getAccessToken(){
-        return mSharedPrefsHelper.get(SharedPrefsHelper.PREF_KEY_ACCESS_TOKEN, null);
+    public String getString(String key){
+        return mSharedPrefsHelper.get(key, null);
     }
 
 }

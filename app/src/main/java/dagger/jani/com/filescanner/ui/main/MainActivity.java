@@ -2,6 +2,7 @@ package dagger.jani.com.filescanner.ui.main;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,12 +20,14 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dagger.jani.com.filescanner.FileApplication;
+import dagger.jani.com.filescanner.FileModel;
 import dagger.jani.com.filescanner.NotificationHandler;
 import dagger.jani.com.filescanner.R;
 import dagger.jani.com.filescanner.di.component.ActivityComponent;
@@ -39,6 +42,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static dagger.jani.com.filescanner.FileUtils.calculateAvgFileSize;
 import static dagger.jani.com.filescanner.FileUtils.generateFileAnalytics;
+import static dagger.jani.com.filescanner.FileUtils.getFrequency;
 import static dagger.jani.com.filescanner.FileUtils.walkDir;
 import static dagger.jani.com.filescanner.Permissions.AndroidRuntimePermission;
 import static dagger.jani.com.filescanner.Permissions.RUNTIME_PERMISSION_CODE;
@@ -122,16 +126,25 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                //cancelScanProcess();
+             cancelScanProcess();
             }
         });
         progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "STOP", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //cancelScanProcess();
+                cancelScanProcess();
             }
         });
     }
+
+    private void cancelScanProcess() {
+        progressDialog.dismiss();
+        initiateCancellation();
+        if (files.isEmpty() && !setOnce)
+            tvHintText.setVisibility(View.VISIBLE);
+        isCancelled = false;
+    }
+
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @OnClick(R.id.btn)
@@ -156,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                         if (!files.isEmpty()) {
                             setValues(files);
                         } else {
-                            //cancelScanProcess();
+                            cancelScanProcess();
                             Snackbar.make(tvHintText, "Retry Scanning", Snackbar.LENGTH_LONG).show();
                         }
                     }
@@ -199,16 +212,43 @@ public class MainActivity extends AppCompatActivity {
         }
     });
 
+
+    @OnClick(R.id.iv_share)
+    public void share(View view) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.total_files_are) + files.size());
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
+    }
+
     private void setValues(ArrayList<File> files) {
         ArrayList<File> topFiles = generateFileAnalytics(files);
         setAdapter(topFiles);
         avgFileSize.setText(calculateAvgFileSize(files));
-        //setFrequentFilesTypes(files);
+        setFrequentFilesTypes(files);
         NotificationHandler.cancelNotification(this);
         progressDialog.cancel();
         ivShare.setVisibility(View.VISIBLE);
         setOnce = true;
     }
+
+    private void setFrequentFilesTypes(ArrayList<File> files) {
+        List<FileModel> fileModels = getFrequency(files);
+        textView.setText(fileModels.get(0).getName());
+        textView1Stats.setText(fileModels.get(0).getFreq());
+        textView2.setText(fileModels.get(1).getName());
+        textView2Stats.setText(fileModels.get(1).getFreq());
+        textView3.setText(fileModels.get(2).getName());
+        textView3Stats.setText(fileModels.get(2).getFreq());
+        textView4.setText(fileModels.get(3).getName());
+        textView4Stats.setText(fileModels.get(3).getFreq());
+        textView5.setText(fileModels.get(4).getName());
+        textView5Stats.setText(fileModels.get(4).getFreq());
+        toggleVisibility(viewList, true);
+
+    }
+
 
     private void setAdapter(ArrayList<File> files) {
         rvFiles.setAdapter(new FileAdapter(files));
@@ -222,13 +262,19 @@ public class MainActivity extends AppCompatActivity {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.cancel();
         }
-        //initiateCancellation();
+        initiateCancellation();
+    }
+
+    private void initiateCancellation() {
+        isCancelled = true;
+        NotificationHandler.cancelNotification(this);
+        compositeDisposable.clear();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //initiateCancellation();
+        initiateCancellation();
     }
 
     @Override
