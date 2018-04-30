@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">FileManager</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">MyFileScannerApp</string>
+    <string name="scan">Scan</string>
+    <string name="average_file_size">Average File Size</string>
+    <string name="total_files_are">Total files are</string>
+    <string name="loading_msg">File scan is in Progress</string>
 </resources>

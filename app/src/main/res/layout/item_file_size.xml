@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/ten_dp"
+    android:layout_marginRight="@dimen/ten_dp"
+    android:layout_marginBottom="@dimen/ten_dp"
+    xmlns:tools="http://schemas.android.com/tools">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:minHeight="@dimen/sixty_dp"
+    android:orientation="horizontal"
+    android:padding="@dimen/ten_dp"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tv_file_name"
+        android:layout_alignParentLeft="true"
+        android:layout_width="wrap_content"
+        tools:text="Free fire"
+        android:textStyle="bold"
+        android:layout_toStartOf="@id/tv_file_size"
+        android:ellipsize="end"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/tv_file_size"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        tools:text="23 mb"
+        android:layout_alignBaseline="@id/tv_file_name"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
+</android.support.v7.widget.CardView>
