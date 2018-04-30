@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         initProgressDialog();
     }
 
+    //method used to set the fields at UI
     private void buildViewList() {
         viewList.add(textView);
         viewList.add(textView1Stats);
@@ -118,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
         viewList.add(textView11);
     }
 
+    //method used to show progress dialog
     void initProgressDialog() {
         progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -137,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //method used to cancel the scan process
     private void cancelScanProcess() {
         progressDialog.dismiss();
         initiateCancellation();
@@ -145,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         isCancelled = false;
     }
 
+    //disposable oject to cancel the scan process
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @OnClick(R.id.btn)
@@ -158,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         buildRxDisposable();
     }
 
+    //This method will get the scan results and post it on main UI thread
     private void buildRxDisposable() {
         Disposable disposable = fileObservable
                 .subscribeOn(Schedulers.io())
@@ -187,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
         compositeDisposable.add(disposable);
     }
 
+    //dagger component for the activity
     public ActivityComponent getActivityComponent() {
         if (activityComponent == null) {
             activityComponent = DaggerActivityComponent.builder()
@@ -222,6 +228,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(sendIntent);
     }
 
+    /**
+     * Method to set values in frequent types and avg file size
+     * @param files List of files to be added
+     * @return void
+     */
     private void setValues(ArrayList<File> files) {
         ArrayList<File> topFiles = generateFileAnalytics(files);
         setAdapter(topFiles);
@@ -233,6 +244,11 @@ public class MainActivity extends AppCompatActivity {
         setOnce = true;
     }
 
+    /**
+     * Method to set values for the top 5 frequent mime types used
+     * @param files List of files to be added
+     * @return void
+     */
     private void setFrequentFilesTypes(ArrayList<File> files) {
         List<FileModel> fileModels = getFrequency(files);
         textView.setText(fileModels.get(0).getName());
@@ -249,7 +265,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * Method to set values in the adapter
+     * @param files List of files to be added
+     * @return void
+     */
     private void setAdapter(ArrayList<File> files) {
         rvFiles.setAdapter(new FileAdapter(files));
         rvFiles.setLayoutManager(new LinearLayoutManager(this));
