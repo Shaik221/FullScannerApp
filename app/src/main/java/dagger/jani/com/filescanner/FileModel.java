@@ -1,4 +1,4 @@
-package dagger.i.com.filemanager;
+package dagger.jani.com.filescanner;
 
 public class FileModel {
 
